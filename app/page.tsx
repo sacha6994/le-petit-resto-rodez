@@ -18,14 +18,18 @@ import {
   ChevronDown,
   Menu,
   X,
-  ExternalLink
+  ExternalLink,
+  MessageCircle,
+  CircleParking,
+  CheckCircle2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 
-// Shared animation variants
+// ── Helpers ──────────────────────────────────────────────
+
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
@@ -44,7 +48,35 @@ const staggerContainer = (staggerDelay: number) => ({
   }
 })
 
-// Navigation Component
+const SCHEDULE: Record<number, [number, number] | null> = {
+  0: null,          // Dimanche
+  1: null,          // Lundi
+  2: [540, 930],    // Mardi 9h-15h30
+  3: [540, 1140],   // Mercredi 9h-19h
+  4: [540, 1320],   // Jeudi 9h-22h
+  5: [540, 1320],   // Vendredi 9h-22h
+  6: [600, 1320],   // Samedi 10h-22h
+}
+
+function isOpenNow() {
+  const now = new Date()
+  const slot = SCHEDULE[now.getDay()]
+  if (!slot) return { open: false, label: "Fermé" }
+  const t = now.getHours() * 60 + now.getMinutes()
+  return t >= slot[0] && t < slot[1]
+    ? { open: true, label: "Ouvert" }
+    : { open: false, label: "Fermé" }
+}
+
+function isClosedDay(dateStr: string) {
+  if (!dateStr) return false
+  const d = new Date(dateStr + "T12:00:00")
+  const day = d.getDay()
+  return day === 0 || day === 1
+}
+
+// ── Navigation ───────────────────────────────────────────
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -53,6 +85,8 @@ function Navbar() {
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 50)
   })
+
+  const status = isOpenNow()
 
   const navItems = [
     { label: "Philosophie", href: "#philosophie" },
@@ -76,9 +110,23 @@ function Navbar() {
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <a href="#" className="font-[var(--font-cormorant)] text-xl sm:text-2xl italic text-foreground">
-            Le Petit Resto
-          </a>
+          <div className="flex items-center gap-3">
+            <a href="#" className="font-[var(--font-cormorant)] text-xl sm:text-2xl italic text-foreground">
+              Le Petit Resto
+            </a>
+            <span className={cn(
+              "hidden sm:inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium",
+              status.open
+                ? "bg-sage/20 text-sage"
+                : "bg-terracotta/15 text-terracotta"
+            )}>
+              <span className={cn(
+                "w-1.5 h-1.5 rounded-full",
+                status.open ? "bg-sage" : "bg-terracotta"
+              )} />
+              {status.label}
+            </span>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -101,14 +149,28 @@ function Navbar() {
             </motion.a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="md:hidden p-2 text-foreground"
-            aria-label="Ouvrir le menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
+          {/* Mobile: status badge + menu button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <span className={cn(
+              "sm:hidden inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full font-medium",
+              status.open
+                ? "bg-sage/20 text-sage"
+                : "bg-terracotta/15 text-terracotta"
+            )}>
+              <span className={cn(
+                "w-1.5 h-1.5 rounded-full",
+                status.open ? "bg-sage" : "bg-terracotta"
+              )} />
+              {status.label}
+            </span>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 text-foreground"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -167,7 +229,8 @@ function Navbar() {
   )
 }
 
-// Hero Section
+// ── Hero ─────────────────────────────────────────────────
+
 function HeroSection() {
   const { scrollY } = useScroll()
   const y = useTransform(scrollY, [0, 500], [0, 150])
@@ -175,7 +238,6 @@ function HeroSection() {
 
   return (
     <section className="relative h-screen h-[100dvh] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Parallax */}
       <motion.div
         style={{ y }}
         className="absolute inset-0 z-0"
@@ -192,7 +254,6 @@ function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-deep-black/60 via-deep-black/40 to-deep-black/70" />
       </motion.div>
 
-      {/* Content */}
       <motion.div
         style={{ opacity }}
         className="relative z-10 text-center px-4 sm:px-6"
@@ -211,9 +272,17 @@ function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
           style={{ fontSize: 'clamp(0.7rem, 1.5vw, 1rem)' }}
-          className="text-warm-white/80 tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-8 sm:mb-10"
+          className="text-warm-white/80 tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-4 sm:mb-5"
         >
           Cuisine de marché • Fait maison • Rodez
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
+          className="text-copper text-sm sm:text-base mb-8 sm:mb-10"
+        >
+          Menu complet dès 25€
         </motion.p>
         <motion.a
           href="#contact"
@@ -221,7 +290,7 @@ function HeroSection() {
           animate={{
             opacity: 1,
             y: 0,
-            transition: { duration: 0.8, delay: 0.8, ease: "easeOut" }
+            transition: { duration: 0.8, delay: 0.9, ease: "easeOut" }
           }}
           whileHover={{
             scale: 1.03,
@@ -233,7 +302,6 @@ function HeroSection() {
         </motion.a>
       </motion.div>
 
-      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -253,7 +321,8 @@ function HeroSection() {
   )
 }
 
-// Section Animation Wrapper
+// ── Section Wrapper ──────────────────────────────────────
+
 function AnimatedSection({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
     <motion.section
@@ -269,7 +338,8 @@ function AnimatedSection({ children, className, id }: { children: React.ReactNod
   )
 }
 
-// Philosophy Section
+// ── Philosophy ───────────────────────────────────────────
+
 function PhilosophySection() {
   return (
     <AnimatedSection id="philosophie" className="py-20 md:py-24 px-4 sm:px-6 lg:px-8 texture-overlay bg-background">
@@ -286,7 +356,6 @@ function PhilosophySection() {
                 className="object-cover"
               />
             </div>
-            {/* Decorative element - hidden on mobile to prevent overflow */}
             <div className="hidden md:block absolute -bottom-6 -right-6 w-32 h-32 border-2 border-copper/30 rounded-xl -z-10" />
           </div>
 
@@ -305,8 +374,7 @@ function PhilosophySection() {
               Notre cuisine ouverte est notre promesse de transparence : tout se passe sous vos yeux.
             </p>
 
-            {/* Quote */}
-            <blockquote className="relative pl-6 border-l-2 border-copper">
+            <blockquote className="relative pl-6 border-l-2 border-copper mb-8 md:mb-10">
               <p
                 style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)' }}
                 className="font-[var(--font-cormorant)] italic text-foreground"
@@ -314,6 +382,19 @@ function PhilosophySection() {
                 « La qualité, pas la quantité. »
               </p>
             </blockquote>
+
+            {/* Chef & Patronne */}
+            <div className="flex items-start gap-4 pt-6 border-t border-border">
+              <div className="w-14 h-14 rounded-full bg-copper/10 flex items-center justify-center flex-shrink-0">
+                <ChefHat className="w-6 h-6 text-copper" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground mb-1">Un chef passionné, une patronne dévouée</p>
+                <p className="text-foreground/60 text-sm leading-relaxed">
+                  En cuisine, un chef qui sublime les produits du terroir aveyronnais. En salle, une hôtesse souriante et proche de ses clients. C&apos;est cette complicité qui fait l&apos;âme du Petit Resto.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -321,14 +402,9 @@ function PhilosophySection() {
   )
 }
 
-// Menu Section
-function MenuSection() {
-  const today = new Date().toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long'
-  })
+// ── Menu ─────────────────────────────────────────────────
 
+function MenuSection() {
   const mainDishes = [
     {
       icon: "🥩",
@@ -359,7 +435,6 @@ function MenuSection() {
   return (
     <AnimatedSection id="menu" className="py-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-cream/50">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10 md:mb-16">
           <h2
             style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
@@ -367,12 +442,15 @@ function MenuSection() {
           >
             La carte du jour
           </h2>
-          <p className="text-copper text-sm tracking-widest uppercase">
-            {today}
+          <p className="text-copper text-sm tracking-widest uppercase mb-2">
+            Exemple de carte
+          </p>
+          <p className="text-foreground/50 text-xs">
+            La carte change chaque jour selon les arrivages du marché
           </p>
         </div>
 
-        {/* Main Dishes - Staggered, stacks on mobile */}
+        {/* Main Dishes */}
         <motion.div
           variants={staggerContainer(0.15)}
           initial="hidden"
@@ -394,7 +472,6 @@ function MenuSection() {
           ))}
         </motion.div>
 
-        {/* Divider */}
         <div className="divider-gold max-w-xs mx-auto mb-12 md:mb-16" />
 
         {/* Desserts */}
@@ -420,20 +497,29 @@ function MenuSection() {
           <p className="text-foreground/70 mb-4">
             <span className="font-medium text-foreground">Menu entrée + plat ou plat + dessert :</span> 21€
           </p>
-          <p className="text-foreground/70 mb-6">
+          <p className="text-foreground/70 mb-4">
             <span className="font-medium text-foreground">Menu complet :</span> 25€
+          </p>
+          <p className="text-foreground/50 text-xs mb-6">
+            Allergies ou intolérances ? Parlez-nous-en, nous adaptons nos plats.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-full">
             <Star className="w-4 h-4 text-copper fill-copper" />
             <span className="text-xs sm:text-sm text-foreground/70">Recommandé par le Guide du Routard</span>
           </div>
         </div>
+
+        {/* Urgency nudge */}
+        <p className="text-center text-foreground/40 text-xs mt-8 italic">
+          30 couverts seulement — pensez à réserver pour ne pas rater la carte du jour
+        </p>
       </div>
     </AnimatedSection>
   )
 }
 
-// Gallery Section
+// ── Gallery ──────────────────────────────────────────────
+
 function GallerySection() {
   const images = [
     { src: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop", alt: "Plat gastronomique", aspect: "aspect-[4/3]" },
@@ -447,7 +533,6 @@ function GallerySection() {
   return (
     <AnimatedSection id="galerie" className="py-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10 md:mb-16">
           <h2
             style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
@@ -458,7 +543,6 @@ function GallerySection() {
           <p className="text-foreground/60">Un aperçu de notre univers</p>
         </div>
 
-        {/* Gallery: horizontal scroll on mobile, grid on md+ */}
         <motion.div
           variants={staggerContainer(0.1)}
           initial="hidden"
@@ -496,7 +580,8 @@ function GallerySection() {
   )
 }
 
-// Stat Counter with react-countup
+// ── Stat Counter ─────────────────────────────────────────
+
 function StatCounter({ value }: { value: string }) {
   let prefix = ''
   let suffix = ''
@@ -532,7 +617,8 @@ function StatCounter({ value }: { value: string }) {
   )
 }
 
-// Reviews Section
+// ── Reviews ──────────────────────────────────────────────
+
 function ReviewsSection() {
   const reviews = [
     {
@@ -571,7 +657,6 @@ function ReviewsSection() {
   return (
     <AnimatedSection id="avis" className="py-20 md:py-24 px-4 sm:px-6 lg:px-8 bg-deep-black text-warm-white">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10 md:mb-16">
           <h2
             style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
@@ -582,7 +667,6 @@ function ReviewsSection() {
           <p className="text-warm-white/60 text-sm sm:text-base">La meilleure recommandation vient de ceux qui nous ont fait confiance</p>
         </div>
 
-        {/* Reviews: horizontal scroll on mobile, grid on md+ */}
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:snap-none md:mx-0 md:px-0 md:pb-0 md:gap-6 mb-12 md:mb-20 scrollbar-hide">
           {reviews.map((review, i) => (
             <motion.article
@@ -609,7 +693,6 @@ function ReviewsSection() {
           ))}
         </div>
 
-        {/* Stats with CountUp */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12">
           {stats.map((stat, i) => (
             <div key={i} className="text-center">
@@ -628,7 +711,8 @@ function ReviewsSection() {
   )
 }
 
-// Experience Section
+// ── Experience ───────────────────────────────────────────
+
 function ExperienceSection() {
   const features = [
     {
@@ -660,7 +744,6 @@ function ExperienceSection() {
 
   return (
     <AnimatedSection className="relative py-20 md:py-24 overflow-hidden">
-      {/* Background Image */}
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop"
@@ -672,7 +755,6 @@ function ExperienceSection() {
         <div className="absolute inset-0 bg-deep-black/70" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 md:mb-16">
           <h2
@@ -710,7 +792,8 @@ function ExperienceSection() {
   )
 }
 
-// Contact Section
+// ── Contact ──────────────────────────────────────────────
+
 function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
@@ -721,11 +804,36 @@ function ContactSection() {
     guests: '2',
     message: ''
   })
+  const [dateWarning, setDateWarning] = useState('')
+  const [formSent, setFormSent] = useState(false)
+
+  const handleDateChange = (dateStr: string) => {
+    setFormData({ ...formData, date: dateStr })
+    if (isClosedDay(dateStr)) {
+      setDateWarning('Le restaurant est fermé le dimanche et le lundi.')
+    } else {
+      setDateWarning('')
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Merci pour votre réservation ! Nous vous contacterons rapidement pour confirmer.')
+    if (isClosedDay(formData.date)) return
+    const msg = [
+      `Bonjour, je souhaite réserver une table :`,
+      `• Nom : ${formData.name}`,
+      `• Tél : ${formData.phone}`,
+      formData.email ? `• Email : ${formData.email}` : '',
+      `• Date : ${formData.date}`,
+      `• Heure : ${formData.time}`,
+      `• Couverts : ${formData.guests}`,
+      formData.message ? `• Note : ${formData.message}` : ''
+    ].filter(Boolean).join('\n')
+    window.open(`https://wa.me/33601312574?text=${encodeURIComponent(msg)}`, '_blank')
+    setFormSent(true)
   }
+
+  const todayStr = new Date().toISOString().split('T')[0]
 
   const hours = [
     { day: "Mardi", hours: "9h - 15h30" },
@@ -751,107 +859,153 @@ function ContactSection() {
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-20">
           {/* Reservation Form */}
           <div className="bg-warm-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-foreground/70 mb-2">Nom</label>
-                  <Input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className="bg-background border-border w-full"
-                    placeholder="Votre nom"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-foreground/70 mb-2">Téléphone</label>
-                  <Input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                    className="bg-background border-border w-full"
-                    placeholder="06 00 00 00 00"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-foreground/70 mb-2">Email</label>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-background border-border w-full"
-                  placeholder="votre@email.com"
-                />
-              </div>
-
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm text-foreground/70 mb-2">Date</label>
-                  <Input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className="bg-background border-border w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-foreground/70 mb-2">Heure</label>
-                  <select
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    className="w-full h-10 px-3 rounded-md border border-border bg-background text-foreground text-sm"
-                  >
-                    <option value="12h00">12h00</option>
-                    <option value="12h30">12h30</option>
-                    <option value="13h00">13h00</option>
-                    <option value="19h30">19h30</option>
-                    <option value="20h00">20h00</option>
-                    <option value="20h30">20h30</option>
-                    <option value="21h00">21h00</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-foreground/70 mb-2">Couverts</label>
-                  <select
-                    value={formData.guests}
-                    onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
-                    className="w-full h-10 px-3 rounded-md border border-border bg-background text-foreground text-sm"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                      <option key={n} value={n}>{n} {n === 1 ? 'personne' : 'personnes'}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-foreground/70 mb-2">Message (optionnel)</label>
-                <Textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="bg-background border-border resize-none w-full"
-                  placeholder="Allergies, occasion spéciale, demandes particulières..."
-                  rows={3}
-                />
-              </div>
-
+            {formSent ? (
               <motion.div
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center text-center py-12"
               >
-                <Button
-                  type="submit"
-                  className="w-full bg-copper hover:bg-terracotta text-warm-white py-5 sm:py-6 text-base"
+                <div className="w-16 h-16 rounded-full bg-sage/20 flex items-center justify-center mb-6">
+                  <CheckCircle2 className="w-8 h-8 text-sage" />
+                </div>
+                <h3 className="font-serif text-xl text-foreground mb-3">Demande envoyée !</h3>
+                <p className="text-foreground/60 text-sm mb-6 max-w-sm">
+                  Votre demande a été transmise via WhatsApp. Nous confirmerons votre réservation dans les plus brefs délais.
+                </p>
+                <p className="text-foreground/50 text-xs mb-6">
+                  Vous pouvez aussi nous appeler directement :
+                </p>
+                <a
+                  href="tel:+33601312574"
+                  className="inline-flex items-center gap-2 text-copper hover:text-terracotta transition-colors font-medium"
                 >
-                  Réserver
-                </Button>
+                  <Phone className="w-4 h-4" />
+                  06 01 31 25 74
+                </a>
+                <button
+                  onClick={() => { setFormSent(false); setFormData({ name: '', phone: '', email: '', date: '', time: '19h30', guests: '2', message: '' }) }}
+                  className="mt-6 text-sm text-foreground/40 hover:text-foreground/60 transition-colors underline underline-offset-2"
+                >
+                  Faire une nouvelle réservation
+                </button>
               </motion.div>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-foreground/70 mb-2">Nom</label>
+                    <Input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="bg-background border-border w-full"
+                      placeholder="Votre nom"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-foreground/70 mb-2">Téléphone</label>
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      required
+                      className="bg-background border-border w-full"
+                      placeholder="06 00 00 00 00"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-foreground/70 mb-2">Email</label>
+                  <Input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="bg-background border-border w-full"
+                    placeholder="votre@email.com"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm text-foreground/70 mb-2">Date</label>
+                    <Input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => handleDateChange(e.target.value)}
+                      min={todayStr}
+                      required
+                      className={cn(
+                        "bg-background border-border w-full",
+                        dateWarning && "border-terracotta"
+                      )}
+                    />
+                    {dateWarning && (
+                      <p className="text-terracotta text-xs mt-1">{dateWarning}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm text-foreground/70 mb-2">Heure</label>
+                    <select
+                      value={formData.time}
+                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      className="w-full h-10 px-3 rounded-md border border-border bg-background text-foreground text-sm"
+                    >
+                      <option value="12h00">12h00</option>
+                      <option value="12h30">12h30</option>
+                      <option value="13h00">13h00</option>
+                      <option value="19h30">19h30</option>
+                      <option value="20h00">20h00</option>
+                      <option value="20h30">20h30</option>
+                      <option value="21h00">21h00</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-foreground/70 mb-2">Couverts</label>
+                    <select
+                      value={formData.guests}
+                      onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
+                      className="w-full h-10 px-3 rounded-md border border-border bg-background text-foreground text-sm"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                        <option key={n} value={n}>{n} {n === 1 ? 'personne' : 'personnes'}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-foreground/70 mb-2">Message (optionnel)</label>
+                  <Textarea
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="bg-background border-border resize-none w-full"
+                    placeholder="Allergies, occasion spéciale, demandes particulières..."
+                    rows={3}
+                  />
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  <Button
+                    type="submit"
+                    disabled={!!dateWarning}
+                    className="w-full bg-copper hover:bg-terracotta text-warm-white py-5 sm:py-6 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Réserver via WhatsApp
+                  </Button>
+                </motion.div>
+
+                <p className="text-center text-foreground/40 text-xs">
+                  Ou appelez directement le{" "}
+                  <a href="tel:+33601312574" className="text-copper hover:underline">06 01 31 25 74</a>
+                </p>
+              </form>
+            )}
           </div>
 
           {/* Contact Info */}
@@ -873,6 +1027,18 @@ function ContactSection() {
                 >
                   Voir sur Google Maps <ExternalLink className="w-3 h-3" />
                 </a>
+              </div>
+            </div>
+
+            {/* Parking */}
+            <div className="flex gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-copper/10 flex items-center justify-center flex-shrink-0">
+                <CircleParking className="w-4 h-4 sm:w-5 sm:h-5 text-copper" />
+              </div>
+              <div>
+                <h3 className="font-medium text-foreground mb-1">Accès & Parking</h3>
+                <p className="text-foreground/70 text-sm sm:text-base">Parking gratuit à proximité sur l&apos;avenue</p>
+                <p className="text-foreground/70 text-sm">Arrêt de bus Cathédrale à 5 min à pied</p>
               </div>
             </div>
 
@@ -927,13 +1093,14 @@ function ContactSection() {
                 >
                   @lepetitresto12
                 </a>
+                <p className="text-foreground/50 text-xs mt-1">Découvrez les plats du jour en story</p>
               </div>
             </div>
 
             {/* Map */}
             <div className="rounded-xl overflow-hidden h-40 sm:h-48 bg-cream">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2869.2!2d2.5725!3d44.3497!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2s43%20Avenue%20Victor%20Hugo%2C%2012000%20Rodez!5e0!3m2!1sfr!2sfr!4v1234567890"
+                src="https://maps.google.com/maps?q=43+Avenue+Victor+Hugo+12000+Rodez+France&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -950,7 +1117,50 @@ function ContactSection() {
   )
 }
 
-// Footer
+// ── Floating Buttons (mobile) ────────────────────────────
+
+function FloatingButtons() {
+  const [visible, setVisible] = useState(false)
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setVisible(latest > 500)
+  })
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed bottom-6 right-4 z-40 flex flex-col gap-3 md:hidden"
+        >
+          <a
+            href="https://wa.me/33601312574?text=Bonjour%2C%20je%20souhaiterais%20r%C3%A9server%20une%20table."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            aria-label="Réserver par WhatsApp"
+          >
+            <MessageCircle className="w-6 h-6" />
+          </a>
+          <a
+            href="tel:+33601312574"
+            className="w-14 h-14 rounded-full bg-copper text-warm-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            aria-label="Appeler le restaurant"
+          >
+            <Phone className="w-6 h-6" />
+          </a>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+// ── Footer ───────────────────────────────────────────────
+
 function Footer() {
   return (
     <footer className="bg-deep-black text-warm-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
@@ -967,7 +1177,6 @@ function Footer() {
           </p>
         </div>
 
-        {/* Links */}
         <div className="flex justify-center gap-6 sm:gap-8 mb-10 sm:mb-12">
           <motion.a
             href="https://instagram.com/lepetitresto12"
@@ -1004,10 +1213,8 @@ function Footer() {
           </motion.a>
         </div>
 
-        {/* Divider */}
         <div className="divider-gold mb-8" />
 
-        {/* Copyright */}
         <div className="text-center space-y-2">
           <p className="text-warm-white/40 text-xs sm:text-sm">
             © 2025 Le Petit Resto — Tous droits réservés
@@ -1024,7 +1231,8 @@ function Footer() {
   )
 }
 
-// Section Divider
+// ── Section Divider ──────────────────────────────────────
+
 function SectionDivider() {
   return (
     <div aria-hidden="true" className="flex justify-center">
@@ -1033,7 +1241,8 @@ function SectionDivider() {
   )
 }
 
-// Main Page Component
+// ── Main ─────────────────────────────────────────────────
+
 export default function LePetitResto() {
   return (
     <main className="texture-overlay overflow-x-hidden">
@@ -1050,6 +1259,7 @@ export default function LePetitResto() {
       <SectionDivider />
       <ContactSection />
       <Footer />
+      <FloatingButtons />
     </main>
   )
 }

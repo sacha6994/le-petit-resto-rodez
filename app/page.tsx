@@ -56,7 +56,7 @@ const SCHEDULE: Record<number, [number, number] | null> = {
   3: [540, 1140],   // Mercredi 9h-19h
   4: [540, 1320],   // Jeudi 9h-22h
   5: [540, 1320],   // Vendredi 9h-22h
-  6: null,          // Samedi (à confirmer)
+  6: [600, 1320],   // Samedi 10h-22h
 }
 
 function isOpenNow() {
@@ -842,7 +842,8 @@ function ContactSection() {
     { day: "Mardi", hours: "9h - 15h30" },
     { day: "Mercredi", hours: "9h - 19h" },
     { day: "Jeudi - Vendredi", hours: "9h - 22h" },
-    { day: "Samedi, Dimanche & Lundi", hours: "Fermé" },
+    { day: "Samedi", hours: "10h - 22h" },
+    { day: "Dimanche & Lundi", hours: "Fermé" },
   ]
 
   return (

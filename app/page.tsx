@@ -21,7 +21,8 @@ import {
   ExternalLink,
   MessageCircle,
   CircleParking,
-  CheckCircle2
+  CheckCircle2,
+  Landmark
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -55,7 +56,7 @@ const SCHEDULE: Record<number, [number, number] | null> = {
   3: [540, 1140],   // Mercredi 9h-19h
   4: [540, 1320],   // Jeudi 9h-22h
   5: [540, 1320],   // Vendredi 9h-22h
-  6: [600, 1320],   // Samedi 10h-22h
+  6: null,          // Samedi (à confirmer)
 }
 
 function isOpenNow() {
@@ -505,7 +506,7 @@ function MenuSection() {
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-full">
             <Star className="w-4 h-4 text-copper fill-copper" />
-            <span className="text-xs sm:text-sm text-foreground/70">Recommandé par le Guide du Routard</span>
+            <span className="text-xs sm:text-sm text-foreground/70">Référencé au Petit Futé</span>
           </div>
         </div>
 
@@ -622,26 +623,26 @@ function StatCounter({ value }: { value: string }) {
 function ReviewsSection() {
   const reviews = [
     {
-      text: "Un chef exceptionnel, des saveurs authentiques, un rapport qualité-prix imbattable. À ce prix-là, foncez les yeux fermés.",
-      author: "Marie L.",
-      source: "Google",
-      rating: 5
-    },
-    {
-      text: "Cuisine ouverte impeccable, produits frais sublimés. Un restaurant qui mérite d'être connu.",
-      author: "Jean-Pierre D.",
-      source: "Google",
-      rating: 5
-    },
-    {
-      text: "Pain fait maison, plats généreux, un chef passionné qui partage sa vision. On reviendra !",
-      author: "Sophie M.",
+      text: "Cuisine maison de qualité, produits frais et de saison. Le menu à 25€ est un excellent rapport qualité-prix. Le chef travaille devant vous, c'est un vrai spectacle.",
+      author: "Ludo_Rodez",
       source: "Tripadvisor",
       rating: 5
     },
     {
-      text: "La patronne est exceptionnelle. Gentille, souriante, proche de sa clientèle. Les plats étaient succulents.",
-      author: "François B.",
+      text: "Accueil chaleureux, plats généreux et savoureux. Le pain est fait maison, on sent la passion du chef. Une belle adresse à Rodez.",
+      author: "Christelle B.",
+      source: "Google",
+      rating: 5
+    },
+    {
+      text: "Petite pépite sur l'avenue Victor Hugo ! Tout est frais, cuisiné minute. La patronne est adorable et aux petits soins. On y retourne sans hésiter.",
+      author: "PatrickM_12",
+      source: "Tripadvisor",
+      rating: 5
+    },
+    {
+      text: "Restaurant familial avec une vraie cuisine du marché. Les desserts maison sont un régal. Terrasse agréable en été. Je recommande vivement.",
+      author: "Nathalie R.",
       source: "Google",
       rating: 5
     }
@@ -736,6 +737,11 @@ function ExperienceSection() {
       description: "20 places au soleil, avenue Victor Hugo"
     },
     {
+      icon: Landmark,
+      title: "À deux pas du Musée Soulages",
+      description: "L'étape idéale avant ou après votre visite"
+    },
+    {
       icon: Users,
       title: "Accueil famille",
       description: "Menus adaptés pour les enfants sur demande"
@@ -766,7 +772,7 @@ function ExperienceSection() {
           <p className="text-warm-white/60 text-sm sm:text-base">Un cadre pensé pour le plaisir de tous les sens</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}
@@ -774,10 +780,7 @@ function ExperienceSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: i * 0.1, ease: "easeOut" }}
               viewport={{ once: true }}
-              className={cn(
-                "text-center",
-                i === features.length - 1 && "col-span-2 sm:col-span-1"
-              )}
+              className="text-center"
             >
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-copper/20 flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-copper" />
@@ -839,8 +842,7 @@ function ContactSection() {
     { day: "Mardi", hours: "9h - 15h30" },
     { day: "Mercredi", hours: "9h - 19h" },
     { day: "Jeudi - Vendredi", hours: "9h - 22h" },
-    { day: "Samedi", hours: "10h - 22h" },
-    { day: "Dimanche & Lundi", hours: "Fermé" },
+    { day: "Samedi, Dimanche & Lundi", hours: "Fermé" },
   ]
 
   return (
@@ -1037,7 +1039,7 @@ function ContactSection() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">Accès & Parking</h3>
-                <p className="text-foreground/70 text-sm sm:text-base">Parking gratuit à proximité sur l&apos;avenue</p>
+                <p className="text-foreground/70 text-sm sm:text-base">Face au cinéma — Parking gratuit à proximité sur l&apos;avenue</p>
                 <p className="text-foreground/70 text-sm">Arrêt de bus Cathédrale à 5 min à pied</p>
               </div>
             </div>

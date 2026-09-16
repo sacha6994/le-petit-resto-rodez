@@ -26,31 +26,45 @@ const cormorant = Cormorant_Garamond({
   display: 'swap',
 })
 
+// Site de démonstration : aucune donnée réelle, aucun établissement existant.
+// L'indexation par les moteurs de recherche est explicitement désactivée.
 export const metadata: Metadata = {
-  title: 'Le Petit Resto | Restaurant fait maison à Rodez',
-  description: 'Cuisine 100% fait maison au cœur de Rodez. Carte du jour qui change selon le marché. 4.9★ sur Google. Réservez votre table.',
-  keywords: ['restaurant', 'Rodez', 'cuisine française', 'fait maison', 'gastronomique', 'Aveyron', 'cuisine de marché'],
-  authors: [{ name: 'Le Petit Resto' }],
+  title: 'La Table d\'Émile | Site de démonstration',
+  description:
+    'Site vitrine de démonstration pour un restaurant fictif. Les informations, prix et coordonnées affichés sont des exemples et ne correspondent à aucun établissement réel.',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      'max-snippet': -1,
+      'max-image-preview': 'none',
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
-    title: 'Le Petit Resto | Restaurant fait maison à Rodez',
-    description: 'Cuisine 100% fait maison au cœur de Rodez. Carte du jour qui change selon le marché. 4.9★ sur Google.',
+    title: 'La Table d\'Émile | Site de démonstration',
+    description:
+      'Modèle de site vitrine pour restaurant. Contenu fictif à titre d\'exemple.',
     type: 'website',
     locale: 'fr_FR',
-    siteName: 'Le Petit Resto',
-    url: 'https://lepetitresto-rodez.fr',
+    siteName: 'La Table d\'Émile (démo)',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1200&auto=format&fit=crop',
         width: 1200,
         height: 630,
-        alt: 'Le Petit Resto — Restaurant fait maison à Rodez',
+        alt: 'Site de démonstration — restaurant fictif',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Le Petit Resto | Restaurant fait maison à Rodez',
-    description: 'Cuisine 100% fait maison au cœur de Rodez. Carte du jour qui change selon le marché. 4.9★ sur Google.',
+    title: 'La Table d\'Émile | Site de démonstration',
+    description: 'Modèle de site vitrine pour restaurant. Contenu fictif à titre d\'exemple.',
     images: ['https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1200&auto=format&fit=crop'],
   },
   icons: {
@@ -85,78 +99,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${playfair.variable} ${inter.variable} ${cormorant.variable}`}>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Restaurant",
-              "name": "Le Petit Resto",
-              "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1200&auto=format&fit=crop",
-              "url": "https://lepetitresto-rodez.fr",
-              "telephone": "+33601312574",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "43 Avenue Victor Hugo",
-                "addressLocality": "Rodez",
-                "postalCode": "12000",
-                "addressRegion": "Aveyron",
-                "addressCountry": "FR"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 44.3497,
-                "longitude": 2.5725
-              },
-              "servesCuisine": ["French", "Cuisine de marché", "Fait maison"],
-              "priceRange": "€€",
-              "currenciesAccepted": "EUR",
-              "paymentAccepted": "Cash, Credit Card",
-              "menu": "https://lepetitresto-rodez.fr/#menu",
-              "acceptsReservations": "True",
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "bestRating": "5",
-                "ratingCount": "132"
-              },
-              "openingHoursSpecification": [
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Tuesday",
-                  "opens": "09:00",
-                  "closes": "15:30"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Wednesday",
-                  "opens": "09:00",
-                  "closes": "19:00"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Thursday",
-                  "opens": "09:00",
-                  "closes": "22:00"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Friday",
-                  "opens": "09:00",
-                  "closes": "22:00"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Saturday",
-                  "opens": "10:00",
-                  "closes": "22:00"
-                }
-              ]
-            })
-          }}
-        />
-      </head>
       <body className="font-sans antialiased">
         {children}
         <Analytics />

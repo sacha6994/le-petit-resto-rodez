@@ -18,11 +18,11 @@ import {
   ChevronDown,
   Menu,
   X,
-  ExternalLink,
   MessageCircle,
   CircleParking,
   CheckCircle2,
-  Landmark
+  Landmark,
+  Info
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -76,6 +76,26 @@ function isClosedDay(dateStr: string) {
   return day === 0 || day === 1
 }
 
+// ── Bandeau site de démonstration ────────────────────────
+
+function DemoBanner() {
+  return (
+    <div
+      role="note"
+      className="fixed top-0 left-0 right-0 z-[60] h-10 bg-terracotta text-warm-white flex items-center justify-center px-3 text-center"
+    >
+      <p className="flex items-center gap-2 text-[11px] sm:text-xs tracking-wide leading-tight">
+        <Info className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+        <span>
+          <strong className="font-semibold">Site de démonstration</strong>
+          <span className="hidden sm:inline"> — restaurant fictif, prix et coordonnées non réels. Modèle réalisé par IRYA.</span>
+          <span className="sm:hidden"> — restaurant fictif, données non réelles.</span>
+        </span>
+      </p>
+    </div>
+  )
+}
+
 // ── Navigation ───────────────────────────────────────────
 
 function Navbar() {
@@ -104,7 +124,7 @@ function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          "fixed top-10 left-0 right-0 z-50 transition-all duration-500",
           scrolled
             ? "bg-warm-white/90 backdrop-blur-md shadow-sm"
             : "bg-transparent"
@@ -113,7 +133,7 @@ function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <a href="#" className="font-[var(--font-cormorant)] text-xl sm:text-2xl italic text-foreground">
-              Le Petit Resto
+              La Table d'Émile
             </a>
             <span className={cn(
               "hidden sm:inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium",
@@ -183,11 +203,11 @@ function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed inset-0 z-50 bg-warm-white md:hidden overflow-hidden"
+            className="fixed inset-x-0 top-10 bottom-0 z-50 bg-warm-white md:hidden overflow-hidden"
           >
             <div className="flex flex-col h-full p-6">
               <div className="flex justify-between items-center">
-                <span className="font-[var(--font-cormorant)] text-2xl italic">Le Petit Resto</span>
+                <span className="font-[var(--font-cormorant)] text-2xl italic">La Table d'Émile</span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2"
@@ -245,7 +265,7 @@ function HeroSection() {
       >
         <Image
           src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop"
-          alt="Vue du restaurant Le Petit Resto à Rodez"
+          alt="Vue du restaurant fictif (site de démonstration)"
           fill
           priority
           sizes="100vw"
@@ -266,7 +286,7 @@ function HeroSection() {
           style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
           className="font-[var(--font-cormorant)] text-warm-white italic mb-4 sm:mb-6"
         >
-          Le Petit Resto
+          La Table d'Émile
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
@@ -275,7 +295,7 @@ function HeroSection() {
           style={{ fontSize: 'clamp(0.7rem, 1.5vw, 1rem)' }}
           className="text-warm-white/80 tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-4 sm:mb-5"
         >
-          Cuisine de marché • Fait maison • Rodez
+          Cuisine de marché • Fait maison • Site de démonstration
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }}
@@ -392,7 +412,7 @@ function PhilosophySection() {
               <div>
                 <p className="font-medium text-foreground mb-1">Un chef passionné, une patronne dévouée</p>
                 <p className="text-foreground/60 text-sm leading-relaxed">
-                  En cuisine, un chef qui sublime les produits du terroir aveyronnais. En salle, une hôtesse souriante et proche de ses clients. C&apos;est cette complicité qui fait l&apos;âme du Petit Resto.
+                  En cuisine, un chef qui sublime les produits du terroir local. En salle, une hôtesse souriante et proche de ses clients. C&apos;est cette complicité qui fait l&apos;âme de La Table d'Émile.
                 </p>
               </div>
             </div>
@@ -506,7 +526,7 @@ function MenuSection() {
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream rounded-full">
             <Star className="w-4 h-4 text-copper fill-copper" />
-            <span className="text-xs sm:text-sm text-foreground/70">Référencé au Petit Futé</span>
+            <span className="text-xs sm:text-sm text-foreground/70">Distinction fictive (exemple)</span>
           </div>
         </div>
 
@@ -624,35 +644,35 @@ function ReviewsSection() {
   const reviews = [
     {
       text: "Cuisine maison de qualité, produits frais et de saison. Le menu à 25€ est un excellent rapport qualité-prix. Le chef travaille devant vous, c'est un vrai spectacle.",
-      author: "Ludo_Rodez",
-      source: "Tripadvisor",
+      author: "Client fictif 1",
+      source: "Avis fictif",
       rating: 5
     },
     {
-      text: "Accueil chaleureux, plats généreux et savoureux. Le pain est fait maison, on sent la passion du chef. Une belle adresse à Rodez.",
-      author: "Christelle B.",
-      source: "Google",
+      text: "Accueil chaleureux, plats généreux et savoureux. Le pain est fait maison, on sent la passion du chef. Une belle adresse.",
+      author: "Client fictif 2",
+      source: "Avis fictif",
       rating: 5
     },
     {
-      text: "Petite pépite sur l'avenue Victor Hugo ! Tout est frais, cuisiné minute. La patronne est adorable et aux petits soins. On y retourne sans hésiter.",
-      author: "PatrickM_12",
-      source: "Tripadvisor",
+      text: "Petite pépite en centre-ville ! Tout est frais, cuisiné minute. La patronne est adorable et aux petits soins. On y retourne sans hésiter.",
+      author: "Client fictif 3",
+      source: "Avis fictif",
       rating: 5
     },
     {
       text: "Restaurant familial avec une vraie cuisine du marché. Les desserts maison sont un régal. Terrasse agréable en été. Je recommande vivement.",
-      author: "Nathalie R.",
-      source: "Google",
+      author: "Client fictif 4",
+      source: "Avis fictif",
       rating: 5
     }
   ]
 
   const stats = [
-    { value: "4.9", label: "Note Google" },
-    { value: "130+", label: "Avis clients" },
-    { value: "5/5", label: "Tripadvisor" },
-    { value: "#10", label: "Top restaurants Rodez" }
+    { value: "4.9", label: "Note moyenne (exemple)" },
+    { value: "130+", label: "Avis (exemple)" },
+    { value: "5/5", label: "Satisfaction (exemple)" },
+    { value: "#10", label: "Classement (exemple)" }
   ]
 
   return (
@@ -729,17 +749,17 @@ function ExperienceSection() {
     {
       icon: Wine,
       title: "Vins sélectionnés",
-      description: "Ardèche, Minervois et belles découvertes"
+      description: "Une sélection de vins de petits producteurs"
     },
     {
       icon: Sun,
       title: "Terrasse",
-      description: "20 places au soleil, avenue Victor Hugo"
+      description: "20 places au soleil, rue des Lilas"
     },
     {
       icon: Landmark,
-      title: "À deux pas du Musée Soulages",
-      description: "L'étape idéale avant ou après votre visite"
+      title: "À deux pas du centre-ville",
+      description: "L'étape idéale pour une pause gourmande"
     },
     {
       icon: Users,
@@ -767,7 +787,7 @@ function ExperienceSection() {
             style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
             className="font-serif text-warm-white mb-4"
           >
-            L&apos;expérience Le Petit Resto
+            L&apos;expérience La Table d'Émile
           </h2>
           <p className="text-warm-white/60 text-sm sm:text-base">Un cadre pensé pour le plaisir de tous les sens</p>
         </div>
@@ -822,17 +842,7 @@ function ContactSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (isClosedDay(formData.date)) return
-    const msg = [
-      `Bonjour, je souhaite réserver une table :`,
-      `• Nom : ${formData.name}`,
-      `• Tél : ${formData.phone}`,
-      formData.email ? `• Email : ${formData.email}` : '',
-      `• Date : ${formData.date}`,
-      `• Heure : ${formData.time}`,
-      `• Couverts : ${formData.guests}`,
-      formData.message ? `• Note : ${formData.message}` : ''
-    ].filter(Boolean).join('\n')
-    window.open(`https://wa.me/33601312574?text=${encodeURIComponent(msg)}`, '_blank')
+    // Site de démonstration : aucune donnée n'est envoyée, on affiche simplement l'écran de confirmation.
     setFormSent(true)
   }
 
@@ -871,20 +881,10 @@ function ContactSection() {
                 <div className="w-16 h-16 rounded-full bg-sage/20 flex items-center justify-center mb-6">
                   <CheckCircle2 className="w-8 h-8 text-sage" />
                 </div>
-                <h3 className="font-serif text-xl text-foreground mb-3">Demande envoyée !</h3>
+                <h3 className="font-serif text-xl text-foreground mb-3">Demande envoyée ! (démo)</h3>
                 <p className="text-foreground/60 text-sm mb-6 max-w-sm">
-                  Votre demande a été transmise via WhatsApp. Nous confirmerons votre réservation dans les plus brefs délais.
+                  Ceci est un site de démonstration : aucune réservation n&apos;a été transmise. Sur un site réel, vous recevriez ici une confirmation.
                 </p>
-                <p className="text-foreground/50 text-xs mb-6">
-                  Vous pouvez aussi nous appeler directement :
-                </p>
-                <a
-                  href="tel:+33601312574"
-                  className="inline-flex items-center gap-2 text-copper hover:text-terracotta transition-colors font-medium"
-                >
-                  <Phone className="w-4 h-4" />
-                  06 01 31 25 74
-                </a>
                 <button
                   onClick={() => { setFormSent(false); setFormData({ name: '', phone: '', email: '', date: '', time: '19h30', guests: '2', message: '' }) }}
                   className="mt-6 text-sm text-foreground/40 hover:text-foreground/60 transition-colors underline underline-offset-2"
@@ -999,13 +999,12 @@ function ContactSection() {
                     className="w-full bg-copper hover:bg-terracotta text-warm-white py-5 sm:py-6 text-base disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Réserver via WhatsApp
+                    Envoyer la demande (démo)
                   </Button>
                 </motion.div>
 
                 <p className="text-center text-foreground/40 text-xs">
-                  Ou appelez directement le{" "}
-                  <a href="tel:+33601312574" className="text-copper hover:underline">06 01 31 25 74</a>
+                  Formulaire de démonstration : aucune donnée n&apos;est envoyée ni conservée.
                 </p>
               </form>
             )}
@@ -1020,16 +1019,9 @@ function ContactSection() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">Adresse</h3>
-                <p className="text-foreground/70 text-sm sm:text-base">43 Avenue Victor Hugo</p>
-                <p className="text-foreground/70 text-sm sm:text-base">12000 Rodez, France</p>
-                <a
-                  href="https://maps.google.com/?q=43+Avenue+Victor+Hugo+12000+Rodez+France"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-copper text-sm mt-2 hover:underline"
-                >
-                  Voir sur Google Maps <ExternalLink className="w-3 h-3" />
-                </a>
+                <p className="text-foreground/70 text-sm sm:text-base">12 rue des Lilas</p>
+                <p className="text-foreground/70 text-sm sm:text-base">00000 Villebonne (ville fictive)</p>
+                <p className="text-foreground/40 text-xs mt-2">Adresse fictive — site de démonstration</p>
               </div>
             </div>
 
@@ -1040,8 +1032,8 @@ function ContactSection() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">Accès & Parking</h3>
-                <p className="text-foreground/70 text-sm sm:text-base">Face au cinéma — Parking gratuit à proximité sur l&apos;avenue</p>
-                <p className="text-foreground/70 text-sm">Arrêt de bus Cathédrale à 5 min à pied</p>
+                <p className="text-foreground/70 text-sm sm:text-base">Parking gratuit à proximité (exemple)</p>
+                <p className="text-foreground/70 text-sm">Arrêt de bus à 5 min à pied (exemple)</p>
               </div>
             </div>
 
@@ -1052,9 +1044,8 @@ function ContactSection() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">Téléphone</h3>
-                <a href="tel:+33601312574" className="text-foreground/70 hover:text-copper transition-colors">
-                  06 01 31 25 74
-                </a>
+                <p className="text-foreground/70">00 00 00 00 00</p>
+                <p className="text-foreground/40 text-xs mt-1">Numéro fictif — site de démonstration</p>
               </div>
             </div>
 
@@ -1088,30 +1079,16 @@ function ContactSection() {
               </div>
               <div>
                 <h3 className="font-medium text-foreground mb-1">Instagram</h3>
-                <a
-                  href="https://instagram.com/lepetitresto12"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-copper hover:underline"
-                >
-                  @lepetitresto12
-                </a>
-                <p className="text-foreground/50 text-xs mt-1">Découvrez les plats du jour en story</p>
+                <p className="text-copper">@latabledemile (compte fictif)</p>
+                <p className="text-foreground/50 text-xs mt-1">Compte fictif — aucun lien réel (site de démonstration)</p>
               </div>
             </div>
 
             {/* Map */}
-            <div className="rounded-xl overflow-hidden h-40 sm:h-48 bg-cream">
-              <iframe
-                src="https://maps.google.com/maps?q=43+Avenue+Victor+Hugo+12000+Rodez+France&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Localisation Le Petit Resto"
-              />
+            <div className="rounded-xl overflow-hidden h-40 sm:h-48 bg-cream border border-dashed border-copper/40 flex flex-col items-center justify-center text-center px-4">
+              <MapPin className="w-6 h-6 text-copper/60 mb-2" />
+              <p className="text-foreground/60 text-sm">Emplacement de la carte interactive</p>
+              <p className="text-foreground/40 text-xs mt-1">Sur un site réel, une carte Google Maps s&apos;affiche ici.</p>
             </div>
           </div>
         </div>
@@ -1141,20 +1118,11 @@ function FloatingButtons() {
           className="fixed bottom-6 right-4 z-40 flex flex-col gap-3 md:hidden"
         >
           <a
-            href="https://wa.me/33601312574?text=Bonjour%2C%20je%20souhaiterais%20r%C3%A9server%20une%20table."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-            aria-label="Réserver par WhatsApp"
+            href="#contact"
+            className="w-14 h-14 rounded-full bg-copper text-warm-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            aria-label="Aller au formulaire de réservation (démo)"
           >
             <MessageCircle className="w-6 h-6" />
-          </a>
-          <a
-            href="tel:+33601312574"
-            className="w-14 h-14 rounded-full bg-copper text-warm-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-            aria-label="Appeler le restaurant"
-          >
-            <Phone className="w-6 h-6" />
           </a>
         </motion.div>
       )}
@@ -1173,57 +1141,55 @@ function Footer() {
             style={{ fontSize: 'clamp(1.5rem, 3vw, 1.875rem)' }}
             className="font-[var(--font-cormorant)] italic mb-2"
           >
-            Le Petit Resto
+            La Table d'Émile
           </h2>
           <p className="text-warm-white/60 text-xs sm:text-sm tracking-wider">
-            Cuisine de marché, fait maison, Rodez
+            Cuisine de marché, fait maison — site de démonstration
           </p>
         </div>
 
+        {/* Réseaux sociaux : icônes décoratives, aucun lien réel (site de démonstration) */}
         <div className="flex justify-center gap-6 sm:gap-8 mb-10 sm:mb-12">
-          <motion.a
-            href="https://instagram.com/lepetitresto12"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center hover:bg-copper transition-colors"
-            aria-label="Instagram"
+          <span
+            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center"
+            aria-label="Instagram (exemple)"
+            title="Instagram — exemple"
           >
             <Instagram className="w-5 h-5" />
-          </motion.a>
-          <motion.a
-            href="https://tripadvisor.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center hover:bg-copper transition-colors"
-            aria-label="Tripadvisor"
+          </span>
+          <span
+            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center"
+            aria-label="Avis (exemple)"
+            title="Avis — exemple"
           >
             <Star className="w-5 h-5" />
-          </motion.a>
-          <motion.a
-            href="https://maps.google.com/?q=43+Avenue+Victor+Hugo+12000+Rodez+France"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center hover:bg-copper transition-colors"
-            aria-label="Google Maps"
+          </span>
+          <span
+            className="w-10 h-10 rounded-full bg-warm-white/10 flex items-center justify-center"
+            aria-label="Plan (exemple)"
+            title="Plan — exemple"
           >
             <MapPin className="w-5 h-5" />
-          </motion.a>
+          </span>
         </div>
 
         <div className="divider-gold mb-8" />
 
+        <div className="max-w-2xl mx-auto mb-8 rounded-xl border border-copper/30 bg-warm-white/5 p-4 sm:p-5 text-center">
+          <p className="text-copper text-xs tracking-widest uppercase mb-2">Site de démonstration</p>
+          <p className="text-warm-white/70 text-xs sm:text-sm leading-relaxed">
+            Ce site est un modèle réalisé par IRYA pour présenter un exemple de site vitrine de restaurant.
+            Le restaurant « La Table d&apos;Émile » n&apos;existe pas. Les prix, horaires, avis, adresse et coordonnées
+            sont fictifs et ne correspondent à aucun établissement réel.
+          </p>
+        </div>
+
         <div className="text-center space-y-2">
           <p className="text-warm-white/40 text-xs sm:text-sm">
-            © 2025 Le Petit Resto — Tous droits réservés
+            © 2025 La Table d'Émile — Restaurant fictif, site de démonstration
           </p>
           <p className="text-warm-white/40 text-xs">
-            Site réalisé par{" "}
+            Modèle réalisé par{" "}
             <a href="https://irya.fr" target="_blank" rel="noopener noreferrer" className="hover:text-copper transition-colors underline-offset-2 hover:underline">
               IRYA — irya.fr
             </a>
@@ -1246,9 +1212,10 @@ function SectionDivider() {
 
 // ── Main ─────────────────────────────────────────────────
 
-export default function LePetitResto() {
+export default function RestaurantDemo() {
   return (
     <main className="texture-overlay overflow-x-hidden">
+      <DemoBanner />
       <Navbar />
       <HeroSection />
       <PhilosophySection />
